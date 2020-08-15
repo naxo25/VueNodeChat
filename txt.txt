@@ -1,0 +1,3 @@
+node o nodemon backend-api/server => puerto 4000
+
+puedes probarlo con pwa/index.html en el navegador o hacer un proyecto nuevo con quasar o vue cli y copiar la carpeta src
