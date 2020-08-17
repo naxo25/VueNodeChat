@@ -14,7 +14,7 @@
 importScripts("https://storage.googleapis.com/workbox-cdn/releases/4.3.1/workbox-sw.js");
 
 importScripts(
-  "precache-manifest.0b93b663c6a2002edf88f776dba8d319.js"
+  "precache-manifest.03ed28c7fbe86a02aeab87172b74e0f8.js"
 );
 
 workbox.core.setCacheNameDetails({prefix: "naxNode"});

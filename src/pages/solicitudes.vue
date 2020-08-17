@@ -1,53 +1,75 @@
 <template>
-  <q-page 
-    ref="pageChat"
-    no caps
-    class="page-chat flex column">
-    <q-banner 
-      v-if="!otherUser.online"
-      class="bg-grey-4 text-center top">
-      {{ otherUser.name }} is offline.
-    </q-banner>
-    <div 
-      :class="{ 'invisible' : !showMessages }"
-      class="q-pa-md column col justify-end">
-      <q-chat-message
-        v-for="(message, key) in chats"
-        :key="key"
-        :sent="message.from == 'me' ? true : false">
-        <span class="text-weight-bold">
-          {{ message.Nombre }}
-          <br>
-          {{ message.mensaje }}
-          {{ message.hora }}
-        </span>
-      </q-chat-message>
-    </div>
-    <q-footer>
-        <q-toolbar class="bg-grey-3 text-black text-weight-bold row">
-          <q-btn round flat icon="insert_emoticon" class="q-mr-sm" />
-          <q-input rounded outlined dense class="WAL__field col-grow q-mr-sm" bg-color="white" v-model="mensaje" placeholder="Type a message" @keyup.enter='save()' />
-          <q-btn round flat icon="send" @click='save' />
-        </q-toolbar>
-      </q-footer>
+  <q-page class="flex q-pa-md"> 
+
+    <q-list 
+      class="full-width"
+      style='margin-bottom:50px' 
+      separator>
+      <q-item-section>
+         <q-item 
+          v-for='(amigo, key) in users'
+          :key="key"
+          clickable
+          v-ripple>
+        
+          <q-item-section avatar @click="verfoto(amigo), card = true">
+            <q-avatar>
+              <img id='preload' :src="amigo.userImg != null ? amigo.userImg : noimg" />
+            </q-avatar>
+          </q-item-section>
+                
+          <q-item-section class='text-left' @click='go(key)'>
+            <q-item-label>{{ amigo.Nombre }}</q-item-label>
+            <q-item-label class='text-caption text-grey'>{{ amigo.ultChat }}</q-item-label>
+          </q-item-section>
+                          
+          <q-item-section side>
+            <q-badge @click='go(key)'
+              :color="amigo.online ? 'light-primary-5' : 'grey-4'">
+              {{ amigo.online ? 'Online' : 'Offline' }}
+            </q-badge>
+          </q-item-section>
+
+        </q-item>
+      </q-item-section>
+      
+    </q-list>
+
+    <q-dialog v-model="card">
+      <q-card class="my-card" style='width: 95%; height:21.1em' >
+        <q-img :src="amigoClick.userImg != null ? amigoClick.userImg : noimg" style='height: 15em' />
+
+        <q-card-section>
+            <div class="col text-h6 ellipsis">
+              {{amigoClick.Nombre}}    
+            </div>
+          <q-badge :color="amigoClick.online ? 'light-green-5' : 'grey-4'">
+            {{amigoClick.online ? 'Online' : 'Offline' }}
+          </q-badge>
+        </q-card-section>
+
+      </q-card>
+    </q-dialog>
+  </div>
   </q-page>
 </template>
-
+  
 <script>
-  import { mapState, mapActions } from 'vuex'
-  import { date } from 'quasar'
+  import { mapActions, mapGetters } from 'vuex';
 
       export default {
         data() {
           return {
-        newMessage: '',
-        showMessages: true,
-        otherUser: {},
+            card: false,
+            amigoClick: {},
             noname: true,
             info: false,
             id: '',
             idFoto: '',
             mensaje: '',
+            datosActualizar: {
+              mensaje: ''
+            },
             datos: {},
             Actualizando: false,
             idActualizar: -1,
@@ -57,20 +79,29 @@
           }
         },
         mounted() {
-          this.otherUser = this.$store.state.store.chats
-          console.log(this.asd)
+          console.log(this.$store.state.activos.arrNombres)
         },
         computed: {
-          ...mapState('store', ['chats', 'users', 'user']),
-          asd() { return this.$store.state.store2.asd; },
+          users() {
+            return this.$store.state.store.users;
+          },
+          user() {
+            return this.$store.state.store.user;
+          },
+          asd() {
+            return this.$store.state.activos.arrNombres;
+          },
+          ...mapGetters('store', ['chats'])
         },
         methods: {
-            ...mapActions('store', ['cant', 'add', 'update', 'delete', 'imgUser', 'dicant']),
-                async save (){            
-                  var timeStamp = new Date(); var from = 'me';
-                  if (Math.floor((Math.random() * 2) + 1) == 1) { from = 'then' };
-                  var hora = date.formatDate(timeStamp, 'HH:mm:ss DD/MM');
-                  await this.add({mensaje:this.mensaje,from,hora});
+            ...mapActions('store', ['cant','add', 'update', 'delete', 'imgUser', 'dicant']),
+                removeSesion(){
+                  localStorage.removeItem('Nombre');
+                  localStorage.removeItem('userImg');
+                  this.dicant();
+                },
+                async save (){
+                  await this.add(this.mensaje);
                     //this.tareas.push({ usuario: datos.usuario, userImg: datos.userImg, mensaje: datos.mensaje });
                   this.mensaje = '';
                 },
@@ -134,13 +165,16 @@
                          localStorage.userImg = msg;
                      };
                     reader.readAsDataURL(data);
+                },
+
+                verfoto(amigo){
+                    this.amigoClick.userImg = amigo.userImg
+                    this.amigoClick.Nombre = amigo.Nombre
+                    this.amigoClick.online = amigo.online
                 }
 
             }
       }
     
 
-  </script>
-
-
-        //:name="message.from == 'me' ? userDetails.name : otherUser.name"
+</script>
