@@ -4,4 +4,6 @@ Chat en tiempo real multiplataforma usando vuejs, vuex, nodejs ,socket.io y quas
 
 Creado por Ignacio Labra.
 
+Para acceder solo ponga un nombre
+
 https://nacholabraweb.000webhostapp.com
